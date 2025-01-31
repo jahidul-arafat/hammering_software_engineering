@@ -15,22 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-console.log("VAULT_ADDR:", process.env.VAULT_ADDR);
-console.log("VAULT_TOKEN:", process.env.VAULT_TOKEN ? "Token exists" : "No token found");
-console.log("SECRET_PATH:", process.env.SECRET_PATH);
-const VAULT_ADDR = process.env.VAULT_ADDR || '';
-const VAULT_TOKEN = process.env.VAULT_TOKEN || '';
-const SECRET_PATH = process.env.SECRET_PATH || '';
-if (!VAULT_ADDR || !VAULT_TOKEN || !SECRET_PATH) {
-    console.error("Missing environment variables. Please check your .env file.");
-    process.exit(1);
-}
+const VAULT_ADDR = process.env.VAULT_ADDR;
+const VAULT_TOKEN = process.env.VAULT_TOKEN;
+const SECRET_PATH = process.env.SECRET_PATH;
+/**
+ * Function to fetch secret from HashiCorp Vault
+ */
 function fetchSecret() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const url = `${VAULT_ADDR}/v1/${SECRET_PATH}`;
-            console.log("Fetching from URL:", url);
-            const response = yield axios_1.default.get(url, {
+            const response = yield axios_1.default.get(`${VAULT_ADDR}/v1/${SECRET_PATH}`, {
                 headers: { 'X-Vault-Token': VAULT_TOKEN }
             });
             console.log('Secret Data:', response.data.data);
@@ -40,4 +34,25 @@ function fetchSecret() {
         }
     });
 }
-fetchSecret();
+/**
+ * Main function to interact with user before fetching secrets
+ */
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("I am JAZ, your TABot to guide you to setup. Type 'NEXT' to continue...");
+        console.log("Type 'NEXT' to continue... (or press Ctrl+C to exit): ");
+        process.stdin.on('data', (data) => __awaiter(this, void 0, void 0, function* () {
+            const input = data.toString().trim().toUpperCase();
+            if (input === 'NEXT') {
+                console.log("Fetching secrets from Vault...");
+                yield fetchSecret();
+                process.exit(0);
+            }
+            else {
+                console.log("Invalid input. Type 'NEXT' to continue.");
+            }
+        }));
+    });
+}
+// Start the program
+main();

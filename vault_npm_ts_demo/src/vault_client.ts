@@ -3,25 +3,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log("VAULT_ADDR:", process.env.VAULT_ADDR);
-console.log("VAULT_TOKEN:", process.env.VAULT_TOKEN ? "Token exists" : "No token found");
-console.log("SECRET_PATH:", process.env.SECRET_PATH);
+const VAULT_ADDR = process.env.VAULT_ADDR;
+const VAULT_TOKEN = process.env.VAULT_TOKEN;
+const SECRET_PATH = process.env.SECRET_PATH;
 
-const VAULT_ADDR = process.env.VAULT_ADDR || '';
-const VAULT_TOKEN = process.env.VAULT_TOKEN || '';
-const SECRET_PATH = process.env.SECRET_PATH || '';
-
-if (!VAULT_ADDR || !VAULT_TOKEN || !SECRET_PATH) {
-    console.error("Missing environment variables. Please check your .env file.");
-    process.exit(1);
-}
-
+/**
+ * Function to fetch secret from HashiCorp Vault
+ */
 async function fetchSecret() {
     try {
-        const url = `${VAULT_ADDR}/v1/${SECRET_PATH}`;
-        console.log("Fetching from URL:", url);
-
-        const response = await axios.get(url, {
+        const response = await axios.get(`${VAULT_ADDR}/v1/${SECRET_PATH}`, {
             headers: { 'X-Vault-Token': VAULT_TOKEN }
         });
         console.log('Secret Data:', response.data.data);
@@ -30,4 +21,25 @@ async function fetchSecret() {
     }
 }
 
-fetchSecret();
+/**
+ * Main function to interact with user before fetching secrets
+ */
+async function main() {
+    console.log("I am JAZ, your TABot to guide you to setup. Type 'NEXT' to continue...");
+    console.log("Type 'NEXT' to continue... (or press Ctrl+C to exit): ");
+
+    process.stdin.on('data', async (data) => {
+
+        const input = data.toString().trim().toUpperCase();
+        if (input === 'NEXT') {
+            console.log("Fetching secrets from Vault...");
+            await fetchSecret();
+            process.exit(0);
+        } else {
+            console.log("Invalid input. Type 'NEXT' to continue.");
+        }
+    });
+}
+
+// Start the program
+main();

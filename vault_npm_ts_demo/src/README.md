@@ -103,63 +103,43 @@ curl --header "X-Vault-Token: <your-root-token>" \
      http://127.0.0.1:8200/v1/secret/data/myapp
 ```
 
-### Simple TypeScript Application Using Vault
-
-Below is a simple **TypeScript application** that retrieves a secret from Vault:
-
-#### Initialize TypeScript Project
+### Simple Application Using Vault
 
 ```sh
-mkdir vault-app && cd vault-app
-npm init -y
-npm install typescript ts-node axios dotenv @types/node --save-dev
-npx tsc --init
+git clone https://github.com/jahidul-arafat/hammering_software_engineering 
+cd hammering_software_engineering/vault_npm_ts_demo
+npm run # check all the existing scripts
+npm install # install all the dependencies, will create local npm pkg repo at node_modules
+npm ls # list all the npm installed modules
+npm run build # will build the native .js
+npm start # start the script; your Application will start runnign listing to the VAULT to fetch secrets
+>> I am JAZ, your TABot to guide you to setup.
+Press CLICK HERE to fetch secrets. (Then Ctrl + Click the printed "CLICK HERE" link.)
 ```
 
-#### Install Dependencies
-
-```sh
-npm install axios dotenv
-```
-
-#### Create a `.env` file:
-
-```env
-VAULT_ADDR=http://127.0.0.1:8200
-VAULT_TOKEN=<your-root-token>
-SECRET_PATH=secret/data/myapp
-```
-
-#### TypeScript Code (`vaultClient.ts`):
-
-```typescript
-import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const VAULT_ADDR = process.env.VAULT_ADDR;
-const VAULT_TOKEN = process.env.VAULT_TOKEN;
-const SECRET_PATH = process.env.SECRET_PATH;
-
-async function fetchSecret() {
-    try {
-        const response = await axios.get(`${VAULT_ADDR}/v1/${SECRET_PATH}`, {
-            headers: { 'X-Vault-Token': VAULT_TOKEN }
-        });
-        console.log('Secret Data:', response.data.data);
-    } catch (error) {
-        console.error('Error fetching secret:', error);
-    }
-}
-
-fetchSecret();
-```
 
 #### Run the Application
 
 ```sh
-npx ts-node vaultClient.ts
+export $(cat ./src/.env | xargs)
+npm run build 
+npm start
+# npx ts-node vault_client.ts
+
+# If having issues, 
+# a. then clean first
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+
+# b. Verify the ts-node version
+npx ts-node -v
+
+# v. if issue persists, then
+rm -rf node_modules/.bin/ts-node
+npm install ts-node --save-dev
+
+#
 ```
 
 ## 7. Secure Vault in Production
